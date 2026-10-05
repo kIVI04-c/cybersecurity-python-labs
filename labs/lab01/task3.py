@@ -5,7 +5,7 @@ import hashlib
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
@@ -54,12 +54,9 @@ def create_users(users_list: list) -> None:
 
 def read_users_db() -> list:
     """Зчитує CSV-базу користувачів."""
-    users_db = []
     with open(USERS_CSV_PATH, mode="r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        for row in reader:
-            users_db.append(row)
-    return users_db
+        return list(reader)
 
 
 def log_event(func):
@@ -75,11 +72,14 @@ def log_event(func):
             status = "failure"
             raise
         finally:
+            current_time = (
+                datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S")
+            )
             log_entry = {
                 "event": "login",
                 "user": username,
                 "result": status,
-                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "timestamp": current_time,
                 "args": list(args),
                 "kwargs": kwargs,
             }
@@ -88,7 +88,7 @@ def log_event(func):
                 try:
                     with open(LOG_JSON_PATH, "r", encoding="utf-8") as jf:
                         logs = json.load(jf)
-                except (OSError, json.JSONDecodeError):
+                except (json.JSONDecodeError, OSError):
                     logs = []
             logs.append(log_entry)
             os.makedirs(DATA_DIR, exist_ok=True)
@@ -143,23 +143,15 @@ def run_task3() -> None:
             print(f"{r['username']:<15} | {r['password_hash']}")
 
         print("\nТестування входу в систему:")
-        # Успішний вхід
         auth1 = login("admin_user", "Compl3x!Pass1")
         print(f"Спроба 1 (admin_user, правильний пароль): {auth1}")
 
-        # Невдалий вхід
         auth2 = login("admin_user", "WrongP@ssword1")
         print(f"Спроба 2 (admin_user, неправильний пароль): {auth2}")
 
         print(f"[OK] Журнал подій успішно оновлено: {LOG_JSON_PATH}")
 
-    except (
-        OSError,
-        FileNotFoundError,
-        PermissionError,
-        ValidationError,
-        ValueError,
-    ) as e:
+    except (OSError, ValidationError, ValueError) as e:
         print(f"[Помилка виконання]: {e}")
 
 
