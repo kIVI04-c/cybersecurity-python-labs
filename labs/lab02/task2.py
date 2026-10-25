@@ -31,9 +31,7 @@ def load_blacklist(blacklist_path: Path) -> set[str]:
     return blacklist
 
 
-def is_suspicious_domain(
-    domain: str, min_domain_len: int
-) -> tuple[bool, str]:
+def is_suspicious_domain(domain: str, min_domain_len: int) -> tuple[bool, str]:
     """Перевіряє домен на ознаки DGA, довжину або підозрілі зони TLD."""
     # 1. Занадто довгий домен (тунелювання або ексфільтрація)
     if len(domain) >= min_domain_len:

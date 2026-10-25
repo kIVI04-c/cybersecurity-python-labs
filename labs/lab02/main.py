@@ -43,14 +43,10 @@ def run_demo() -> None:
     audit = AuditLog()
     account = UserAccount(user=user, audit_log=audit)
 
-    fail_res = account.login(
-        "analyst_illia", "WrongPassword", ip="192.168.1.55"
-    )
+    fail_res = account.login("analyst_illia", "WrongPassword", ip="192.168.1.55")
     print(f"Спроба входу з хибним паролем: {fail_res}")
 
-    success_res = account.login(
-        "analyst_illia", "SuperSecret2026!", ip="192.168.1.55"
-    )
+    success_res = account.login("analyst_illia", "SuperSecret2026!", ip="192.168.1.55")
     print(f"Спроба входу з правильним паролем: {success_res}")
     print(f"Користувач авторизований? {account.is_authenticated()}")
 
@@ -62,9 +58,7 @@ def run_demo() -> None:
     print("\n[5] Симуляція таймауту сесії та logout:")
     if account.session:
         account.session.last_activity -= timedelta(seconds=1000)
-    print(
-        f"Сесія активна після таймауту (1000 сек)? {account.is_authenticated()}"
-    )
+    print(f"Сесія активна після таймауту (1000 сек)? {account.is_authenticated()}")
 
     account.logout()
     print("Виконано logout.")
@@ -80,15 +74,11 @@ def run_demo() -> None:
 
 def main() -> None:
     """Точка входу для команд demo та analyze."""
-    parser = argparse.ArgumentParser(
-        description="Керування Лабораторною роботою №2"
-    )
+    parser = argparse.ArgumentParser(description="Керування Лабораторною роботою №2")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Підкоманда demo
-    subparsers.add_parser(
-        "demo", help="Запустити демонстрацію класів ООП (Завдання 1)"
-    )
+    subparsers.add_parser("demo", help="Запустити демонстрацію класів ООП (Завдання 1)")
 
     # Підкоманда analyze
     analyze_parser = subparsers.add_parser(
