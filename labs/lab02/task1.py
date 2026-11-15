@@ -64,7 +64,6 @@ class User:
     def deactivate(self) -> None:
         """Деактивує користувача."""
         self.active = False
-
     def __str__(self) -> str:
         status = "Active" if self.active else "Inactive"
         return f"User({self.username}, email={self.email}, role={self.role}, status={status})"
